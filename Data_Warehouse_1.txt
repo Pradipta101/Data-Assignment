@@ -1,0 +1,70 @@
+1. Designing a Data Warehouse for IPL Cricket Tournament:
+      Note : While designing any Data Warehouse make sure to cover given below points.
+      a. Design Fact & Dimension tables
+      b. Create meaningful Primary & Foreign keys
+      c. Try to follow Star/SnowFlake Schema Design
+      d. Try to write few SQL queries to generate insightful business metrics (This is the critical
+      point because you need to understand the Data & Business both)
+
+
+Fact & Dimension tables:
+
+Fact table: "match_stats"
+Columns: match_id (primary key), runs_scored, wickets_taken, extras, balls_bowled.
+
+Dimension tables: "teams", "players", "venues", "match_dates"
+"teams" table: team_id (primary key), team_name, coach, captain.
+"players" table: player_id (primary key), player_name, team_id (foreign key to teams table), position.
+"venues" table: venue_id (primary key), venue_name, city, capacity.
+"match_dates" table: match_date (primary key), date, month, yea.
+
+Primary & Foreign keys:
+              match_stats table: match_id (primary key)
+              teams table: team_id (primary key)
+              players table: player_id (primary key)
+              venues table: venue_id (primary key)
+              match_dates table: match_date (primary key)
+foreign keys: team_id in players table (references team_id in teams table), 
+              match_date in match_stats table (references match_date in match_dates table), 
+              venue_id in match_stats table (references venue_id in venues table)
+
+Star/SnowFlake Schema Design:
+Star schema design will be used, where the fact table (match_stats) is connected to multiple dimension tables (teams, players, venues, match_dates) through foreign keys.
+
+
+IMPORTANT SQL Query:
+
+1. Total runs scored by a team in a particular season:
+
+SELECT teams.team_name, SUM(match_stats.runs_scored) as total_runs
+FROM match_stats
+JOIN teams ON teams.team_id = match_stats.team_id
+WHERE match_dates.year = '2022'
+GROUP BY teams.team_name
+
+2. Top 10 highest run-scorers in a particular season:
+
+SELECT players.player_name, SUM(match_stats.runs_scored) as runs
+FROM match_stats
+JOIN players ON players.player_id = match_stats.player_id
+WHERE match_dates.year = '2022'
+GROUP BY players.player_name
+ORDER BY runs DESC
+LIMIT 10
+
+3. Average runs scored per match by a team in a particular season:
+
+SELECT teams.team_name, AVG(match_stats.runs_scored) as avg_runs
+FROM match_stats
+JOIN teams ON teams.team_id = match_stats.team_id
+WHERE match_dates.year = '2022'
+GROUP BY teams.team_name
+
+4.Venue wise match counts and average runs scored in a particular season:
+
+SELECT venues.venue_name, COUNT(match_stats.match_id) as match_count, AVG(match_stats.runs_scored) as avg_runs
+FROM match_stats
+JOIN venues ON venues.venue_id = match_stats.venue_id
+WHERE match_dates.year = '2022'
+GROUP BY venues.venue_name
+

@@ -1,0 +1,96 @@
+Design a Data Warehouse for Food delivery app like Swiggy, Zomato (Asked in Grab for Data Engineer role)
+
+      Note : While designing any Data Warehouse make sure to cover given below points.
+      a. Design Fact & Dimension tables
+      b. Create meaningful Primary & Foreign keys
+      c. Try to follow Star/SnowFlake Schema Design
+      d. Try to write few SQL queries to generate insightful business metrics (This is the critical
+      point because you need to understand the Data & Business both)
+
+
+
+Design Fact & Dimension tables:
+
+Fact Table: Order_Fact
+Order_ID (Primary Key)
+Customer_ID (Foreign Key from Customer Dimension)
+Restaurant_ID (Foreign Key from Restaurant Dimension)
+Order_Date (Foreign Key from Date Dimension)
+Order_Time (Foreign Key from Time Dimension)
+Total_Amount
+
+Dimension Table: Customer
+Customer_ID (Primary Key)
+Customer_Name
+Email_ID
+Phone_Number
+Address
+City
+
+Dimension Table: Restaurant
+Restaurant_ID (Primary Key)
+Restaurant_Name
+Cuisine_Type
+City
+
+Dimension Table: Date
+Date_ID (Primary Key)
+Order_Date
+Day_of_Week
+Month
+Year
+
+Dimension Table: Time
+Time_ID (Primary Key)
+Order_Time
+Hour
+
+b. Create meaningful Primary & Foreign keys:
+
+Order_ID will be the Primary Key for the Order_Fact table.
+Customer_ID will be the Primary Key for the Customer Dimension table and Foreign Key for the Order_Fact table.
+Restaurant_ID will be the Primary Key for the Restaurant Dimension table and Foreign Key for the Order_Fact table.
+Date_ID will be the Primary Key for the Date Dimension table and Foreign Key for the Order_Fact table.
+Time_ID will be the Primary Key for the Time Dimension table and Foreign Key for the Order_Fact table.
+
+
+c. Try to follow Star/SnowFlake Schema Design:
+The above design follows Star Schema Design as it has a central fact table (Order_Fact) and multiple dimension tables (Customer, Restaurant, Date, Time) surrounding it.
+
+
+d. Try to write few SQL queries to generate insightful business metrics:
+
+1. Total Order Count by City:
+
+SELECT City, COUNT(Order_ID) AS Total_Orders
+FROM Order_Fact
+JOIN Restaurant ON Order_Fact.Restaurant_ID = Restaurant.Restaurant_ID
+GROUP BY City
+
+2. Average Order Amount by City:
+
+SELECT City, AVG(Total_Amount) AS Average_Order_Amount
+FROM Order_Fact
+JOIN Restaurant ON Order_Fact.Restaurant_ID = Restaurant.Restaurant_ID
+GROUP BY City
+
+3. Total Order Count by Cuisine Type:
+
+SELECT Cuisine_Type, COUNT(Order_ID) AS Total_Orders
+FROM Order_Fact
+JOIN Restaurant ON Order_Fact.Restaurant_ID = Restaurant.Restaurant_ID
+GROUP BY Cuisine_Type
+
+4. Total Order Count by Day of Week:
+
+SELECT Day_of_Week, COUNT(Order_ID) AS Total_Orders
+FROM Order_Fact
+JOIN Date ON Order_Fact.Date_ID = Date.Date_ID
+GROUP BY Day_of_Week
+
+5. Total Order Count by Hour:
+
+SELECT Hour, COUNT(Order_ID) AS Total_Orders
+FROM Order_Fact
+JOIN Time ON Order_Fact.Time_ID = Time.Time_ID
+GROUP BY Hour
